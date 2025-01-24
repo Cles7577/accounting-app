@@ -1,4 +1,4 @@
-name = "accounting-app"
+name = "accounting-app-cles"
 compatibility_date = "2024-01-25"
 
 [build]
@@ -8,7 +8,7 @@ command = ""
 bucket = "./public"
 
 [env.production]
-name = "accounting-app-prod"
+name = "accounting-app-cles-prod"
 
 [vars]
 FLASK_APP = "app.py"
