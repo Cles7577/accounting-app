@@ -17,19 +17,5 @@
 <body>
     <h1>Budget Tracker</h1>
     <p>Welcome to the Budget Tracker application.</p>
-    <div id="status">Checking API status...</div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('/api')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('status').textContent = 'API Status: ' + data.message;
-                })
-                .catch(error => {
-                    document.getElementById('status').textContent = 'Error: ' + error.message;
-                });
-        });
-    </script>
 </body>
 </html>
