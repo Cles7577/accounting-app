@@ -1,0 +1,15 @@
+name = "accounting-app"
+compatibility_date = "2024-01-25"
+
+[build]
+command = ""
+
+[site]
+bucket = "./public"
+
+[env.production]
+name = "accounting-app-prod"
+
+[vars]
+FLASK_APP = "app.py"
+FLASK_ENV = "production"

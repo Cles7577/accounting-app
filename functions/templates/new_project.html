@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="glass-card rounded-2xl p-6">
+        <h1 class="text-2xl font-bold gradient-text mb-6">Create New Project</h1>
+        <form method="POST" class="space-y-6">
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700">Project Name</label>
+                <input type="text" name="name" id="name" required
+                       class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            
+            <div>
+                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                <textarea name="description" id="description" rows="3"
+                          class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+            </div>
+            
+            <div>
+                <label for="capital" class="block text-sm font-medium text-gray-700">Initial Capital</label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500 sm:text-sm">$</span>
+                    </div>
+                    <input type="number" name="capital" id="capital" step="0.01" min="0"
+                           class="block w-full pl-7 pr-12 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+
+            <!-- Team Members Selection -->
+            {% if teams %}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Add Team Members</label>
+                {% for team in teams %}
+                <div class="mb-4 last:mb-0">
+                    <h4 class="text-sm font-medium text-gray-900 mb-2">{{ team.name }}</h4>
+                    <div class="space-y-2">
+                        {% for member in team.members %}
+                            {% if member.user_id != current_user.id %}
+                            <div class="flex items-center">
+                                <input type="checkbox" name="team_members" value="{{ member.user_id }}"
+                                       id="member-{{ member.user_id }}"
+                                       class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                <label for="member-{{ member.user_id }}" 
+                                       class="ml-3 block text-sm font-medium text-gray-700">
+                                    {{ member.username }}
+                                </label>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="rounded-md bg-yellow-50 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i data-feather="alert-circle" class="h-5 w-5 text-yellow-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-yellow-800">No team members available</h3>
+                        <div class="mt-2 text-sm text-yellow-700">
+                            <p>Create a team and add members first to include them in your project.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="flex justify-end gap-3">
+                <a href="{{ url_for('dashboard') }}" 
+                   class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition-colors duration-200">
+                    <i data-feather="x" class="w-4 h-4 mr-2"></i>
+                    Cancel
+                </a>
+                <button type="submit" 
+                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-emerald-400 via-cyan-500 to-blue-500 rounded-xl shadow-sm hover:from-emerald-500 hover:via-cyan-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition-all duration-200 transform hover:scale-105">
+                    <i data-feather="plus" class="w-4 h-4 mr-2"></i>
+                    Create Project
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Initialize Feather icons
+    feather.replace()
+</script>
+{% endblock %}
