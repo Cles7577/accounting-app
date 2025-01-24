@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="relative min-h-screen">
+    <!-- Hero Section -->
+    <div class="relative pt-20 pb-32 flex items-center">
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Main Content -->
+            <div class="text-center">
+                <h1 class="text-7xl font-black text-gray-900 leading-tight mb-8">
+                    Smart Budget
+                    <span class="relative">
+                        <span class="absolute -inset-1 rounded-lg bg-gradient-to-r from-emerald-400 to-blue-400 opacity-20 group-hover:opacity-30 blur"></span>
+                        <span class="relative gradient-text">Tracking</span>
+                    </span>
+                    <br>for Modern Teams
+                </h1>
+                <p class="text-2xl text-gray-600 mb-12 max-w-3xl mx-auto">Take control of your finances with our powerful budget tracking platform. Collaborate with your team, track expenses, and make data-driven decisions.</p>
+
+                <!-- CTA Buttons -->
+                {% if current_user.is_authenticated %}
+                    <div class="mt-10">
+                        <a href="{{ url_for('dashboard') }}" 
+                           class="btn-gradient inline-flex items-center px-12 py-5 text-xl font-medium text-white rounded-2xl">
+                            <i data-feather="layout" class="h-6 w-6 mr-3"></i>
+                            Go to Dashboard
+                            <svg class="ml-3 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                            </svg>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+                        <a href="{{ url_for('register') }}" 
+                           class="btn-gradient inline-flex items-center px-12 py-5 text-xl font-medium text-white rounded-2xl w-full sm:w-auto justify-center">
+                            <i data-feather="user-plus" class="h-6 w-6 mr-3"></i>
+                            Get Started - It's Free
+                            <svg class="ml-3 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                            </svg>
+                        </a>
+                        <a href="{{ url_for('login') }}"
+                           class="inline-flex items-center px-12 py-5 text-xl font-medium text-gray-700 hover:text-gray-900 rounded-2xl w-full sm:w-auto justify-center border-2 border-gray-200 hover:border-gray-300 transition-colors duration-200">
+                            <i data-feather="log-in" class="h-6 w-6 mr-3"></i>
+                            Sign In
+                        </a>
+                    </div>
+                {% endif %}
+
+                <!-- Stats Section -->
+                <div class="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <div class="glass-card rounded-2xl p-8 hover-card">
+                        <div class="text-5xl font-black gradient-text mb-2">10k+</div>
+                        <div class="text-gray-600 text-lg">Active Users</div>
+                    </div>
+                    <div class="glass-card rounded-2xl p-8 hover-card">
+                        <div class="text-5xl font-black gradient-text mb-2">$2M+</div>
+                        <div class="text-gray-600 text-lg">Tracked Monthly</div>
+                    </div>
+                    <div class="glass-card rounded-2xl p-8 hover-card">
+                        <div class="text-5xl font-black gradient-text mb-2">99%</div>
+                        <div class="text-gray-600 text-lg">Satisfaction Rate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="relative py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="glass-card rounded-3xl p-12 hover-card backdrop-blur-lg">
+                    <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-2xl flex items-center justify-center mb-8 mx-auto shadow-lg">
+                        <i data-feather="trending-up" class="h-10 w-10 text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold gradient-text mb-4 text-center">Track Expenses</h3>
+                    <p class="text-gray-600 text-lg leading-relaxed text-center">Monitor your income and expenses with detailed categorization. Get insights through beautiful charts and reports.</p>
+                </div>
+                
+                <div class="glass-card rounded-3xl p-12 hover-card backdrop-blur-lg">
+                    <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-2xl flex items-center justify-center mb-8 mx-auto shadow-lg">
+                        <i data-feather="folder" class="h-10 w-10 text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold gradient-text mb-4 text-center">Manage Projects</h3>
+                    <p class="text-gray-600 text-lg leading-relaxed text-center">Create and organize multiple budget projects. Perfect for personal finances, business budgets, or event planning.</p>
+                </div>
+                
+                <div class="glass-card rounded-3xl p-12 hover-card backdrop-blur-lg">
+                    <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-2xl flex items-center justify-center mb-8 mx-auto shadow-lg">
+                        <i data-feather="users" class="h-10 w-10 text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold gradient-text mb-4 text-center">Team Collaboration</h3>
+                    <p class="text-gray-600 text-lg leading-relaxed text-center">Work together with your team in real-time. Share budgets, assign roles, and track progress together.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="relative py-24">
+        <div class="absolute inset-0 transform -skew-y-6 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 -z-10"></div>
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-card rounded-3xl p-16 text-center hover-card backdrop-blur-lg">
+                <h2 class="text-4xl font-bold gradient-text mb-6">Ready to take control of your finances?</h2>
+                <p class="text-2xl text-gray-600 mb-12">Join thousands of users who are already managing their budgets smarter.</p>
+                <a href="{{ url_for('register') }}" 
+                   class="btn-gradient inline-flex items-center px-12 py-5 text-xl font-medium text-white rounded-2xl">
+                    <i data-feather="arrow-right" class="h-6 w-6 mr-3"></i>
+                    Start Your Free Account
+                    <svg class="ml-3 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

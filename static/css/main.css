@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+.glass-card {
+  @apply bg-white/50 backdrop-blur-lg border border-gray-200;
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-cyan-500 to-blue-500;
+}
+
+.btn-primary {
+  @apply bg-gradient-to-r from-emerald-400 via-cyan-500 to-blue-500 text-white hover:from-emerald-500 hover:via-cyan-600 hover:to-blue-600;
+}
+
+.btn-outline {
+  @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
+}
+
+/* Add background gradient */
+body {
+  @apply min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50;
+}

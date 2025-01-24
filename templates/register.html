@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center py-12">
+    <div class="glass-card p-8 rounded-2xl shadow-lg max-w-md w-full">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-2xl flex items-center justify-center mb-4 mx-auto shadow-lg">
+                <i data-feather="user-plus" class="h-8 w-8 text-white"></i>
+            </div>
+            <h2 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-blue-500">Create Account</h2>
+            <p class="text-gray-600 mt-2">Join us to start managing your budgets</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('register') }}" class="space-y-6">
+            <div class="space-y-2">
+                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-feather="user" class="h-5 w-5 text-gray-400"></i>
+                    </div>
+                    <input type="text" name="username" id="username" required autocomplete="username"
+                        class="block w-full pl-10 px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200">
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-feather="mail" class="h-5 w-5 text-gray-400"></i>
+                    </div>
+                    <input type="email" name="email" id="email" required autocomplete="email"
+                        class="block w-full pl-10 px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200">
+                </div>
+                <p class="text-sm text-gray-500 flex items-center">
+                    <i data-feather="shield" class="h-4 w-4 mr-1"></i>
+                    We'll never share your email with anyone else
+                </p>
+            </div>
+
+            <div class="space-y-2">
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-feather="key" class="h-5 w-5 text-gray-400"></i>
+                    </div>
+                    <input type="password" name="password" id="password" required autocomplete="new-password"
+                        class="block w-full pl-10 px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200">
+                </div>
+                <p class="text-sm text-gray-500 flex items-center">
+                    <i data-feather="lock" class="h-4 w-4 mr-1"></i>
+                    Must be at least 8 characters long
+                </p>
+            </div>
+
+            <div class="space-y-2">
+                <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-feather="check-circle" class="h-5 w-5 text-gray-400"></i>
+                    </div>
+                    <input type="password" name="confirm_password" id="confirm_password" required
+                        class="block w-full pl-10 px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200">
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 bg-white/50 p-4 rounded-xl border border-gray-200">
+                <input type="checkbox" name="terms" id="terms" required
+                    class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded">
+                <label for="terms" class="text-sm text-gray-600">
+                    I agree to the 
+                    <a href="{{ url_for('terms') }}" class="font-medium text-emerald-600 hover:text-emerald-700">Terms of Service</a> 
+                    and 
+                    <a href="{{ url_for('privacy') }}" class="font-medium text-emerald-600 hover:text-emerald-700">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button type="submit"
+                class="w-full btn-gradient flex items-center justify-center px-8 py-3 text-white rounded-xl shadow-lg hover:shadow-xl">
+                <i data-feather="user-plus" class="h-5 w-5 mr-2"></i>
+                Create Account
+            </button>
+        </form>
+
+        <div class="mt-8 text-center">
+            <p class="text-sm text-gray-600">
+                Already have an account?
+                <a href="{{ url_for('login') }}" class="font-medium bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600">
+                    Sign in instead
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
