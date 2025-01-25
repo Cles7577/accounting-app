@@ -2,11 +2,11 @@ name = "budget-tracker"
 compatibility_date = "2024-01-25"
 
 [build]
-command = "bash ./build.sh"
-output_dir = "functions"
+command = "bash /build.sh"
+output_dir = "dist"
 
 [site]
-bucket = "./functions"
+bucket = "./dist"
 
 [build.upload]
 format = "service-worker"
