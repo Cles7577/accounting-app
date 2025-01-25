@@ -1363,8 +1363,7 @@ def forgot_password():
             response = supabase_auth.auth.reset_password_email(
                 email,
                 {
-                    "redirect_to": RESET_URL,
-                    "type": "recovery"
+                    "redirect_to": RESET_URL
                 }
             )
             print(f"Password reset response: {response}")  # Add debug logging
@@ -1381,14 +1380,24 @@ def reset_password():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     
-    # Get tokens from query parameters
-    # Supabase sends these parameters in the URL
-    access_token = request.args.get('access_token')
-    refresh_token = request.args.get('refresh_token')
+    # Debug: Print all URL parameters
+    print("Reset Password URL Parameters:")
+    for key, value in request.args.items():
+        print(f"{key}: {value}")
+    
+    # Try different parameter names that Supabase might use
+    access_token = (
+        request.args.get('access_token') or 
+        request.args.get('token') or
+        request.args.get('jwt')
+    )
     type = request.args.get('type')
     
+    print(f"Found token: {access_token}")
+    print(f"Type: {type}")
+    
     if not access_token:
-        flash('Invalid or missing reset token.', 'error')
+        flash('Invalid or missing reset token. Please request a new password reset link.', 'error')
         return redirect(url_for('login'))
     
     if request.method == 'POST':
@@ -1400,19 +1409,18 @@ def reset_password():
             return render_template('reset_password.html')
         
         try:
-            # Set the session with the tokens
-            supabase_auth.auth.set_session(access_token, refresh_token)
-            
-            # Update user's password using Supabase
-            supabase_auth.auth.update_user({
-                "password": new_password
-            })
+            # Try to update the password directly with the token
+            response = supabase_auth.auth._api.reset_password_for_email(
+                new_password,
+                access_token
+            )
+            print(f"Password reset response: {response}")
             
             flash('Password has been reset successfully. Please log in with your new password.', 'success')
             return redirect(url_for('login'))
         except Exception as e:
-            print(f"Password reset error: {str(e)}")  # Add debug logging
-            flash(f'Error resetting password: {str(e)}', 'error')
+            print(f"Password reset error: {str(e)}")
+            flash(f'Error resetting password. Please try again.', 'error')
             return render_template('reset_password.html')
     
     # For GET request, show the reset password form
