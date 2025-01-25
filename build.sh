@@ -14,6 +14,14 @@ mkdir -p functions
 cp -r app.py config.py auth.py models templates static functions/
 cp -r requirements.txt .env functions/
 
+# Create necessary directories
+mkdir -p flask_session
+mkdir -p static
+
+# Copy static files to the correct location
+cp -r static/* static/
+cp -r templates/* templates/
+
 # Create the worker script to handle Flask routes
 cat > functions/_worker.js << 'EOL'
 export default {
@@ -43,7 +51,7 @@ EOL
 cat > functions/_routes.json << 'EOL'
 {
   "version": 1,
-  "include": ["/*"],
+  "include": ["/static/*"],
   "exclude": []
 }
 EOL
