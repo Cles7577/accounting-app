@@ -4,7 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Budget Tracker</title>
-    <link rel="stylesheet" href="/css/dist/main.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer components {
+            .glass-card {
+                @apply bg-white/50 backdrop-blur-lg border border-gray-200;
+            }
+            .gradient-text {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-cyan-500 to-blue-500;
+            }
+            .btn-primary {
+                @apply bg-gradient-to-r from-emerald-400 via-cyan-500 to-blue-500 text-white hover:from-emerald-500 hover:via-cyan-600 hover:to-blue-600;
+            }
+            .btn-outline {
+                @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
+            }
+        }
+    </style>
     <script src="https://unpkg.com/feather-icons"></script>
     <style>
         .glass-card {
@@ -27,9 +50,6 @@
         }
         .btn-outline {
             @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
-        }
-        .btn-primary {
-            @apply bg-gradient-to-r from-emerald-400 to-blue-500 text-white hover:from-emerald-500 hover:to-blue-600;
         }
     </style>
 </head>
