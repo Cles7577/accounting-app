@@ -4,8 +4,16 @@
 python -m venv .venv
 source .venv/bin/activate
 
-# Install dependencies
+# Install Node.js and npm
+curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+apt-get install -y nodejs
+
+# Install Python dependencies
 pip install -r requirements.txt
+
+# Install Node dependencies and build CSS
+npm install
+npm run build:css
 
 # Create the functions directory if it doesn't exist
 mkdir -p functions
@@ -16,7 +24,7 @@ cp -r requirements.txt .env functions/
 
 # Create necessary directories
 mkdir -p flask_session
-mkdir -p static/css
+mkdir -p static/css/dist
 mkdir -p static/js
 
 # Copy static files to the correct location
