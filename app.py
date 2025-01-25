@@ -1359,9 +1359,12 @@ def forgot_password():
     if request.method == 'POST':
         email = request.form.get('email')
         try:
-            # Send reset password email
+            # Send reset password email with redirect URL
             response = supabase_auth.auth.reset_password_email(
-                email
+                email,
+                {
+                    "redirect_to": f"{SITE_URL}/reset-password"
+                }
             )
             print(f"Password reset email response: {response}")
             flash('Password reset link has been sent to your email. Please check your inbox.', 'success')
@@ -1382,13 +1385,15 @@ def reset_password():
     for key, value in request.args.items():
         print(f"{key}: {value}")
     
-    # Get the hash from URL
-    hash_param = request.args.get('#')
-    if hash_param:
+    # Get the hash from URL fragment
+    hash_fragment = request.args.get('next', '').split('#')[1] if request.args.get('next', '').find('#') != -1 else ''
+    print(f"Hash fragment: {hash_fragment}")
+    
+    if hash_fragment:
         # Parse the hash parameters
-        hash_parts = dict(param.split('=') for param in hash_param.split('&'))
-        token = hash_parts.get('token')
-        type = hash_parts.get('type')
+        params = dict(param.split('=') for param in hash_fragment.split('&'))
+        token = params.get('token')
+        type = params.get('type')
         print(f"Found token in hash: {token}")
         print(f"Found type in hash: {type}")
     else:
