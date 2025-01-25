@@ -11,6 +11,9 @@ import pytz
 # Load environment variables
 load_dotenv()
 
+# Site URL configuration
+SITE_URL = os.getenv('SITE_URL', 'https://budgettracker.pro')
+
 app = Flask(__name__,
            static_url_path='',  # This makes static files available at root URL
            static_folder='static',  # This is the directory where your static files are stored
@@ -145,10 +148,14 @@ def register():
         username = request.form.get('username')
 
         try:
-            # Use auth client for registration
+            # Use auth client for registration with redirect URL
             auth_response = supabase_auth.auth.sign_up({
                 "email": email,
-                "password": password
+                "password": password,
+                "options": {
+                    "data": {"username": username},
+                    "email_redirect_to": f"{SITE_URL}/login"
+                }
             })
 
             if auth_response.user and auth_response.user.id:
@@ -1350,8 +1357,13 @@ def forgot_password():
     if request.method == 'POST':
         email = request.form.get('email')
         try:
-            # Use Supabase's password reset functionality
-            supabase_auth.auth.reset_password_email(email)
+            # Use Supabase's password reset functionality with redirect URL
+            supabase_auth.auth.reset_password_email(
+                email,
+                {
+                    "redirect_to": f"{SITE_URL}/login"
+                }
+            )
             flash('Password reset link has been sent to your email.', 'success')
             return redirect(url_for('login'))
         except Exception as e:
