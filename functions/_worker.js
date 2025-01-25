@@ -3,7 +3,8 @@ export default {
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Content-Type': 'text/html;charset=UTF-8'
     };
 
     // Handle OPTIONS requests
@@ -16,56 +17,20 @@ export default {
     try {
       const url = new URL(request.url);
       
-      // API routes
-      if (url.pathname.startsWith('/api')) {
-        let response;
-        
-        if (url.pathname === '/api/health') {
-          response = {
-            status: 'healthy',
-            version: '1.0.0',
-            timestamp: new Date().toISOString()
-          };
-        } else {
-          response = {
-            error: 'API endpoint not found',
-            status: 404,
-            path: url.pathname
-          };
-          return new Response(JSON.stringify(response), {
-            status: 404,
-            headers: {
-              'Content-Type': 'application/json',
-              ...corsHeaders
-            }
-          });
-        }
-
-        return new Response(JSON.stringify(response), {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-            ...corsHeaders
-          }
-        });
-      }
+      // Handle all routes
+      const response = await env.ASSETS.fetch(request);
       
-      // For non-API routes, let the static site handle it
-      return env.ASSETS.fetch(request);
+      // Add CORS headers to the response
+      const newResponse = new Response(response.body, response);
+      Object.keys(corsHeaders).forEach(key => {
+        newResponse.headers.set(key, corsHeaders[key]);
+      });
       
+      return newResponse;
     } catch (error) {
-      const errorResponse = {
-        error: error.message,
-        status: 'error',
-        timestamp: new Date().toISOString()
-      };
-      
-      return new Response(JSON.stringify(errorResponse), {
+      return new Response(`Server Error: ${error.message}`, {
         status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-          ...corsHeaders
-        }
+        headers: corsHeaders
       });
     }
   }
