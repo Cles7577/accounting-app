@@ -1363,7 +1363,7 @@ def forgot_password():
             response = supabase_auth.auth.reset_password_email(
                 email,
                 {
-                    "redirect_to": f"{SITE_URL}/reset-password"
+                    "redirect_to": RESET_URL
                 }
             )
             print(f"Password reset email response: {response}")
@@ -1377,37 +1377,55 @@ def forgot_password():
 
 @app.route('/reset-password', methods=['GET', 'POST'])
 def reset_password():
+    print("\n=== Reset Password Route ===")
+    print("Method:", request.method)
+    print("URL:", request.url)
+    print("Args:", request.args)
+    print("Form:", request.form)
+    print("Headers:", request.headers)
+    
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     
-    # Debug: Print all URL parameters
-    print("Reset Password URL Parameters:")
-    for key, value in request.args.items():
-        print(f"{key}: {value}")
+    # Try to get token from different sources
+    token = None
+    type = None
     
-    # Get the hash from URL fragment
-    hash_fragment = request.args.get('next', '').split('#')[1] if request.args.get('next', '').find('#') != -1 else ''
-    print(f"Hash fragment: {hash_fragment}")
+    # 1. Check URL fragment in 'next' parameter
+    next_param = request.args.get('next', '')
+    if '#' in next_param:
+        hash_part = next_param.split('#')[1]
+        hash_params = dict(param.split('=') for param in hash_part.split('&'))
+        token = hash_params.get('token')
+        type = hash_params.get('type')
+        print("Found token in next parameter:", token)
     
-    if hash_fragment:
-        # Parse the hash parameters
-        params = dict(param.split('=') for param in hash_fragment.split('&'))
-        token = params.get('token')
-        type = params.get('type')
-        print(f"Found token in hash: {token}")
-        print(f"Found type in hash: {type}")
-    else:
-        token = None
-        type = None
-        print("No hash parameters found")
+    # 2. Check direct parameters
+    if not token:
+        token = request.args.get('token')
+        type = request.args.get('type')
+        print("Found token in direct parameters:", token)
     
-    if not token or type != 'recovery':
+    # 3. Check form data
+    if not token and request.method == 'POST':
+        token = request.form.get('token')
+        type = request.form.get('type')
+        print("Found token in form data:", token)
+    
+    print("Final token:", token)
+    print("Final type:", type)
+    
+    if not token:
         flash('Invalid or missing reset token. Please request a new password reset link.', 'error')
         return redirect(url_for('login'))
     
     if request.method == 'POST':
         password = request.form.get('password')
         password_confirm = request.form.get('passwordConfirm')
+        
+        if not password or not password_confirm:
+            flash('Please enter both password fields.', 'error')
+            return render_template('reset_password.html')
         
         if password != password_confirm:
             flash('Passwords do not match.', 'error')
@@ -1419,12 +1437,12 @@ def reset_password():
                 password,
                 token
             )
-            print(f"Password reset response: {response}")
+            print("Password reset response:", response)
             
             flash('Password has been reset successfully. Please log in with your new password.', 'success')
             return redirect(url_for('login'))
         except Exception as e:
-            print(f"Password reset error: {str(e)}")
+            print("Password reset error:", str(e))
             flash('Error resetting password. Please try again.', 'error')
             return render_template('reset_password.html')
     

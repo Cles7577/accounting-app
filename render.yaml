@@ -35,6 +35,8 @@ services:
         value: 18.x
       - key: SITE_URL
         value: https://budgettracker.pro
+      - key: FLASK_DEBUG
+        value: "True"
     staticPublishPath: ./public
     staticHeaders:
       - path: /*
