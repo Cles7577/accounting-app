@@ -11,7 +11,11 @@ import pytz
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, 
+    static_url_path='/static',
+    static_folder='static',
+    template_folder='templates'
+)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)  # Set session lifetime
 app.config['SESSION_TYPE'] = 'filesystem'

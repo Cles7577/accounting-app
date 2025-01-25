@@ -12,7 +12,8 @@ services:
       - key: FLASK_ENV
         value: production
     staticPublishPath: ./static
-    routes:
-      - type: rewrite
-        source: /static/*
-        destination: /static/*
+    staticHeaders:
+      - path: /static/*
+        headers:
+          - key: Cache-Control
+            value: public, max-age=31536000

@@ -16,11 +16,16 @@ cp -r requirements.txt .env functions/
 
 # Create necessary directories
 mkdir -p flask_session
-mkdir -p static
+mkdir -p static/css
+mkdir -p static/js
 
 # Copy static files to the correct location
 cp -r static/* static/
 cp -r templates/* templates/
+
+# Ensure correct permissions
+chmod -R 755 static
+chmod -R 755 templates
 
 # Create the worker script to handle Flask routes
 cat > functions/_worker.js << 'EOL'
