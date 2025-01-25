@@ -13,6 +13,8 @@ load_dotenv()
 
 # Site URL configuration
 SITE_URL = os.getenv('SITE_URL', 'https://budgettracker.pro')
+CONFIRM_URL = f"{SITE_URL}/confirm"
+RESET_URL = f"{SITE_URL}/reset-password"
 
 app = Flask(__name__,
            static_url_path='',  # This makes static files available at root URL
@@ -154,7 +156,7 @@ def register():
                 "password": password,
                 "options": {
                     "data": {"username": username},
-                    "email_redirect_to": f"{SITE_URL}/login"
+                    "email_redirect_to": CONFIRM_URL
                 }
             })
 
@@ -1361,7 +1363,7 @@ def forgot_password():
             supabase_auth.auth.reset_password_email(
                 email,
                 {
-                    "redirect_to": f"{SITE_URL}/login"
+                    "redirect_to": RESET_URL
                 }
             )
             flash('Password reset link has been sent to your email.', 'success')
@@ -1403,6 +1405,28 @@ def reset_password():
             return render_template('reset_password.html')
     
     return render_template('reset_password.html')
+
+@app.route('/confirm', methods=['GET'])
+def confirm_email():
+    # Get token from query parameters
+    access_token = request.args.get('access_token')
+    refresh_token = request.args.get('refresh_token')
+    
+    if not access_token:
+        flash('Invalid or missing confirmation token.', 'error')
+        return redirect(url_for('login'))
+        
+    try:
+        # Verify the token with Supabase
+        user = supabase_auth.auth.get_user(access_token)
+        if user:
+            flash('Email confirmed successfully. You can now log in.', 'success')
+        else:
+            flash('Invalid confirmation token.', 'error')
+    except Exception as e:
+        flash(f'Error confirming email: {str(e)}', 'error')
+        
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5005))
