@@ -1359,12 +1359,9 @@ def forgot_password():
     if request.method == 'POST':
         email = request.form.get('email')
         try:
-            # Use Supabase's password reset functionality with redirect URL
+            # Send reset password email
             response = supabase_auth.auth.reset_password_email(
-                email,
-                {
-                    "redirect_to": RESET_URL
-                }
+                email
             )
             print(f"Password reset email response: {response}")
             flash('Password reset link has been sent to your email. Please check your inbox.', 'success')
@@ -1385,14 +1382,20 @@ def reset_password():
     for key, value in request.args.items():
         print(f"{key}: {value}")
     
-    # Get the recovery parameters
-    token = request.args.get('token')
-    type = request.args.get('type')
+    # Get the hash from URL
+    hash_param = request.args.get('#')
+    if hash_param:
+        # Parse the hash parameters
+        hash_parts = dict(param.split('=') for param in hash_param.split('&'))
+        token = hash_parts.get('token')
+        type = hash_parts.get('type')
+        print(f"Found token in hash: {token}")
+        print(f"Found type in hash: {type}")
+    else:
+        token = None
+        type = None
+        print("No hash parameters found")
     
-    print(f"Found token: {token}")
-    print(f"Type: {type}")
-    
-    # Verify we have a recovery token
     if not token or type != 'recovery':
         flash('Invalid or missing reset token. Please request a new password reset link.', 'error')
         return redirect(url_for('login'))
@@ -1406,12 +1409,11 @@ def reset_password():
             return render_template('reset_password.html')
         
         try:
-            # Call Supabase's recovery flow
-            response = supabase_auth.auth.verify_otp({
-                'token': token,
-                'type': 'recovery',
-                'new_password': password
-            })
+            # Update user's password
+            response = supabase_auth.auth._api.reset_password_for_email(
+                password,
+                token
+            )
             print(f"Password reset response: {response}")
             
             flash('Password has been reset successfully. Please log in with your new password.', 'success')
@@ -1421,7 +1423,6 @@ def reset_password():
             flash('Error resetting password. Please try again.', 'error')
             return render_template('reset_password.html')
     
-    # For GET request, show the reset password form
     return render_template('reset_password.html')
 
 @app.route('/confirm', methods=['GET'])
