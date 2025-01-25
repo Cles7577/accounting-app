@@ -4,6 +4,9 @@
 python -m venv .venv
 source .venv/bin/activate
 
+# Debug: Print current directory
+echo "Current directory: $(pwd)"
+
 # Install Node.js and npm
 curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 apt-get install -y nodejs
@@ -17,17 +20,29 @@ mkdir -p static/css/dist
 mkdir -p static/js
 
 # Install Node dependencies
+echo "Installing Node dependencies..."
 npm install
 
 # Build Tailwind CSS
 echo "Building Tailwind CSS..."
-npx tailwindcss -i ./static/css/main.css -o ./static/css/dist/main.css --minify
+NODE_ENV=production npx tailwindcss -i ./static/css/main.css -o ./static/css/dist/main.css --minify
 
-# Debug: List contents of directories
-echo "Contents of static/css:"
-ls -la static/css
-echo "Contents of static/css/dist:"
-ls -la static/css/dist
+# Debug: Show the contents and permissions of directories
+echo "Contents of current directory:"
+ls -la
+
+echo "Contents of static directory:"
+ls -la static/
+
+echo "Contents of static/css directory:"
+ls -la static/css/
+
+echo "Contents of static/css/dist directory:"
+ls -la static/css/dist/
+
+echo "File permissions and content of main.css:"
+ls -la static/css/dist/main.css
+cat static/css/dist/main.css
 
 # Copy the entire Flask application structure
 cp -r app.py config.py auth.py models templates static functions/
@@ -40,6 +55,10 @@ cp -r templates/* templates/
 # Ensure correct permissions
 chmod -R 755 static
 chmod -R 755 templates
+
+# Verify permissions after chmod
+echo "Permissions after chmod:"
+ls -la static/css/dist/main.css
 
 # Create the worker script to handle Flask routes
 cat > functions/_worker.js << 'EOL'
