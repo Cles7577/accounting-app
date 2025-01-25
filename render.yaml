@@ -2,7 +2,9 @@ services:
   - type: web
     name: budget-tracker
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      pip install -r requirements.txt
+      mkdir -p flask_session
     startCommand: gunicorn app:app
     envVars:
       - key: PYTHON_VERSION
