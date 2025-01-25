@@ -3,53 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Budget Tracker</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {}
-            }
-        }
-    </script>
-    <style type="text/tailwindcss">
-        @layer components {
-            .glass-card {
-                @apply bg-white/50 backdrop-blur-lg border border-gray-200;
-            }
-            .gradient-text {
-                @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-cyan-500 to-blue-500;
-            }
-            .btn-primary {
-                @apply bg-gradient-to-r from-emerald-400 via-cyan-500 to-blue-500 text-white hover:from-emerald-500 hover:via-cyan-600 hover:to-blue-600;
-            }
-            .btn-outline {
-                @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
-            }
-        }
-    </style>
+    <title>Budget Tracker Pro</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
+    
+    <!-- Tailwind CSS -->
+    <link href="{{ url_for('static', filename='css/dist/main.css') }}" rel="stylesheet">
+    
+    <!-- Feather Icons -->
     <script src="https://unpkg.com/feather-icons"></script>
+    
+    <!-- Custom CSS -->
     <style>
         .glass-card {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .gradient-text {
-            background: linear-gradient(135deg, #34d399 0%, #3b82f6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .btn-gradient {
-            background: linear-gradient(135deg, #34d399 0%, #3b82f6 100%);
-            transition: all 0.2s ease;
-        }
-        .btn-gradient:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .btn-outline {
-            @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
         }
     </style>
 </head>
@@ -107,25 +87,23 @@
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <div class="fixed top-20 right-4 z-50 space-y-2">
+            <div class="fixed top-4 right-4 z-50 space-y-2">
                 {% for category, message in messages %}
-                    <div class="flash-message glass-card px-4 py-3 rounded-xl shadow-lg {% if category == 'error' %}bg-red-50 text-red-800{% else %}bg-emerald-50 text-emerald-800{% endif %} flex items-start">
-                        <div class="flex-shrink-0 mt-0.5">
+                    <div class="glass-card px-4 py-3 rounded-lg shadow-lg {% if category == 'error' %}bg-red-100 border-red-400 text-red-700{% else %}bg-green-100 border-green-400 text-green-700{% endif %} flex items-center">
+                        <div class="mr-2">
                             {% if category == 'error' %}
-                                <i data-feather="alert-circle" class="h-5 w-5 text-red-400"></i>
+                                <i data-feather="alert-circle"></i>
                             {% else %}
-                                <i data-feather="check-circle" class="h-5 w-5 text-emerald-400"></i>
+                                <i data-feather="check-circle"></i>
                             {% endif %}
                         </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium">{{ message }}</p>
-                        </div>
+                        <p>{{ message }}</p>
                     </div>
                 {% endfor %}
             </div>
         {% endif %}
     {% endwith %}
-
+    
     <!-- Main Content -->
     <main>
         {% block content %}{% endblock %}
@@ -144,19 +122,23 @@
         </div>
     </footer>
 
+    <!-- Initialize Feather Icons -->
     <script>
         feather.replace();
         
         // Auto-hide flash messages after 5 seconds
-        setTimeout(function() {
-            const messages = document.querySelectorAll('.flash-message');
-            messages.forEach(msg => {
-                msg.style.opacity = '0';
-                msg.style.transform = 'translateX(100%)';
-                msg.style.transition = 'all 0.5s ease-in-out';
-                setTimeout(() => msg.remove(), 500);
-            });
-        }, 5000);
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const flashMessages = document.querySelectorAll('.glass-card');
+                flashMessages.forEach(function(message) {
+                    message.style.opacity = '0';
+                    message.style.transition = 'opacity 0.5s ease-in-out';
+                    setTimeout(function() {
+                        message.remove();
+                    }, 500);
+                });
+            }, 5000);
+        });
     </script>
 </body>
 </html>
