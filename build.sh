@@ -10,55 +10,38 @@ pip install -r requirements.txt
 # Create the functions directory if it doesn't exist
 mkdir -p functions
 
-# Copy necessary files to functions directory
-cp -r app.py templates static functions/
-cp -r requirements.txt functions/
-cp .env functions/
-cp index.html functions/
+# Copy the entire Flask application structure
+cp -r app.py config.py auth.py models templates static functions/
+cp -r requirements.txt .env functions/
 
-# Create the worker script
+# Create the worker script to handle Flask routes
 cat > functions/_worker.js << 'EOL'
+import { createExecutionContext } from "@cloudflare/workers-types";
+
 export default {
   async fetch(request, env) {
-    const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Content-Type': 'text/html;charset=UTF-8'
-    };
-
-    // Handle OPTIONS requests
-    if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        headers: corsHeaders
-      });
-    }
-
     try {
       const url = new URL(request.url);
       
-      // Serve index.html for the root path
-      if (url.pathname === '/') {
-        const response = await env.ASSETS.fetch(new Request(url.origin + '/index.html'));
-        return new Response(response.body, {
-          ...response,
-          headers: { ...response.headers, ...corsHeaders }
-        });
+      // Serve static files directly
+      if (url.pathname.startsWith('/static/')) {
+        return env.ASSETS.fetch(request);
       }
-      
-      // For all other paths, use env.ASSETS to serve files
-      return env.ASSETS.fetch(request);
+
+      // Forward all other requests to Flask application
+      const response = await env.ASSETS.fetch(request);
+      return response;
     } catch (error) {
       return new Response(`Server Error: ${error.message}`, {
         status: 500,
-        headers: corsHeaders
+        headers: { 'Content-Type': 'text/plain' }
       });
     }
   }
 };
 EOL
 
-# Create a basic _routes.json file for routing
+# Create a routes file for Cloudflare Pages
 cat > functions/_routes.json << 'EOL'
 {
   "version": 1,
