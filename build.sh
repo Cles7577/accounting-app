@@ -11,21 +11,27 @@ apt-get install -y nodejs
 # Install Python dependencies
 pip install -r requirements.txt
 
-# Install Node dependencies and build CSS
-npm install
-npm run build:css
-
-# Create the functions directory if it doesn't exist
-mkdir -p functions
-
-# Copy the entire Flask application structure
-cp -r app.py config.py auth.py models templates static functions/
-cp -r requirements.txt .env functions/
-
 # Create necessary directories
 mkdir -p flask_session
 mkdir -p static/css/dist
 mkdir -p static/js
+
+# Install Node dependencies
+npm install
+
+# Build Tailwind CSS
+echo "Building Tailwind CSS..."
+npx tailwindcss -i ./static/css/main.css -o ./static/css/dist/main.css --minify
+
+# Debug: List contents of directories
+echo "Contents of static/css:"
+ls -la static/css
+echo "Contents of static/css/dist:"
+ls -la static/css/dist
+
+# Copy the entire Flask application structure
+cp -r app.py config.py auth.py models templates static functions/
+cp -r requirements.txt .env functions/
 
 # Copy static files to the correct location
 cp -r static/* static/

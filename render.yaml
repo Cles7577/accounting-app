@@ -9,7 +9,9 @@ services:
       # Install dependencies and build
       pip install -r requirements.txt
       npm install
-      npm run build:css
+      # Build Tailwind CSS
+      npx tailwindcss -i ./static/css/main.css -o ./static/css/dist/main.css --minify
+      # Create session directory
       mkdir -p flask_session
     startCommand: gunicorn app:app
     envVars:
@@ -19,7 +21,7 @@ services:
         value: production
       - key: NODE_VERSION
         value: 18.x
-    staticPublishPath: ./static
+    staticPublishPath: ./static  # This should match Flask's static_folder
     staticHeaders:
       - path: /static/*
         headers:
