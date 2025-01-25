@@ -1385,10 +1385,11 @@ def reset_password():
     for key, value in request.args.items():
         print(f"{key}: {value}")
     
-    access_token = request.args.get('access_token')
-    print(f"Found access_token: {access_token}")
+    # Get the token from the URL
+    token = request.args.get('token')
+    print(f"Found token: {token}")
     
-    if not access_token:
+    if not token:
         flash('Invalid or missing reset token. Please request a new password reset link.', 'error')
         return redirect(url_for('login'))
     
@@ -1402,11 +1403,9 @@ def reset_password():
         
         try:
             # Update the user's password
-            response = supabase_auth.auth.update_user(
-                {
-                    "password": password
-                },
-                access_token
+            response = supabase_auth.auth.verify_and_update_user(
+                token,
+                {"password": password}
             )
             print(f"Password reset response: {response}")
             
