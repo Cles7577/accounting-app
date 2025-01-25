@@ -1233,7 +1233,7 @@ def view_transaction_history(project_id):
         if history_result.data:
             deleted_by_ids = [item['deleted_by'] for item in history_result.data if item['deleted_by']]
             users_result = supabase_db.from_('users').select('id, username').in_('id', deleted_by_ids).execute()
-            users_map = {user['id']: user['username'] for user in users_result.data} if users_result.data else {}
+            users_map = {u['id']: u['username'] for u in users_result.data} if users_result.data else {}
             
             # Add username to history items
             for item in history_result.data:
@@ -1370,6 +1370,39 @@ def forgot_password():
             flash(f'Error sending reset link: {str(e)}', 'error')
             
     return render_template('forgot_password.html')
+
+@app.route('/reset-password', methods=['GET', 'POST'])
+def reset_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    
+    # Get the token from query parameters
+    token = request.args.get('token')
+    
+    if not token:
+        flash('Invalid or missing reset token.', 'error')
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        if new_password != confirm_password:
+            flash('Passwords do not match.', 'error')
+            return render_template('reset_password.html')
+        
+        try:
+            # Update user's password using Supabase
+            supabase_auth.auth.update_user({
+                "password": new_password
+            })
+            flash('Password has been reset successfully.', 'success')
+            return redirect(url_for('login'))
+        except Exception as e:
+            flash(f'Error resetting password: {str(e)}', 'error')
+            return render_template('reset_password.html')
+    
+    return render_template('reset_password.html')
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5005))
