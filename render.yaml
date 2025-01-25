@@ -6,11 +6,23 @@ services:
       # Install Node.js and npm
       curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
       apt-get install -y nodejs
-      # Install dependencies and build
+      
+      # Install dependencies
       pip install -r requirements.txt
       npm install
+      
       # Build Tailwind CSS
+      echo "Building Tailwind CSS..."
       npx tailwindcss -i ./static/css/main.css -o ./static/css/dist/main.css --minify
+      
+      # Move static files to root level
+      mkdir -p public/css/dist
+      cp static/css/dist/main.css public/css/dist/
+      
+      # Debug: Show file contents
+      echo "Listing public directory contents:"
+      ls -R public/
+      
       # Create session directory
       mkdir -p flask_session
     startCommand: gunicorn app:app
@@ -21,9 +33,9 @@ services:
         value: production
       - key: NODE_VERSION
         value: 18.x
-    staticPublishPath: ./static  # This should match Flask's static_folder
+    staticPublishPath: ./public
     staticHeaders:
-      - path: /static/*
+      - path: /*
         headers:
           - key: Cache-Control
             value: public, max-age=31536000
