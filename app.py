@@ -11,11 +11,15 @@ import pytz
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__, 
-    static_url_path='/static',
-    static_folder='static',
-    template_folder='templates'
-)
+app = Flask(__name__,
+           static_url_path='',  # This makes static files available at root URL
+           static_folder='static',  # This is the directory where your static files are stored
+           template_folder='templates')
+
+# Print debug info about static files
+print(f"Static folder: {app.static_folder}")
+print(f"Static URL path: {app.static_url_path}")
+
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)  # Set session lifetime
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -1337,6 +1341,23 @@ def get_user_profile():
         return jsonify(user_data.data)
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+        
+    if request.method == 'POST':
+        email = request.form.get('email')
+        try:
+            # Use Supabase's password reset functionality
+            supabase_auth.auth.reset_password_email(email)
+            flash('Password reset link has been sent to your email.', 'success')
+            return redirect(url_for('login'))
+        except Exception as e:
+            flash(f'Error sending reset link: {str(e)}', 'error')
+            
+    return render_template('forgot_password.html')
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5005))
