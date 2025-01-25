@@ -1385,33 +1385,27 @@ def reset_password():
     for key, value in request.args.items():
         print(f"{key}: {value}")
     
-    # Try different parameter names that Supabase might use
-    access_token = (
-        request.args.get('access_token') or 
-        request.args.get('token') or
-        request.args.get('jwt')
-    )
-    type = request.args.get('type')
-    
-    print(f"Found token: {access_token}")
-    print(f"Type: {type}")
+    access_token = request.args.get('access_token')
+    print(f"Found access_token: {access_token}")
     
     if not access_token:
         flash('Invalid or missing reset token. Please request a new password reset link.', 'error')
         return redirect(url_for('login'))
     
     if request.method == 'POST':
-        new_password = request.form.get('new_password')
-        confirm_password = request.form.get('confirm_password')
+        password = request.form.get('password')
+        password_confirm = request.form.get('passwordConfirm')
         
-        if new_password != confirm_password:
+        if password != password_confirm:
             flash('Passwords do not match.', 'error')
             return render_template('reset_password.html')
         
         try:
-            # Try to update the password directly with the token
-            response = supabase_auth.auth._api.reset_password_for_email(
-                new_password,
+            # Update the user's password
+            response = supabase_auth.auth.update_user(
+                {
+                    "password": password
+                },
                 access_token
             )
             print(f"Password reset response: {response}")
@@ -1420,7 +1414,7 @@ def reset_password():
             return redirect(url_for('login'))
         except Exception as e:
             print(f"Password reset error: {str(e)}")
-            flash(f'Error resetting password. Please try again.', 'error')
+            flash('Error resetting password. Please try again.', 'error')
             return render_template('reset_password.html')
     
     # For GET request, show the reset password form
