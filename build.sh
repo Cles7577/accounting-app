@@ -12,25 +12,45 @@ mkdir -p functions
 
 # Copy necessary files to functions directory
 cp -r app.py templates static functions/
+cp -r requirements.txt functions/
 cp .env functions/
 
 # Create the worker script
 cat > functions/_worker.js << 'EOL'
 export default {
   async fetch(request, env) {
-    try {
-      // Forward the request to your Flask app
-      const url = new URL(request.url);
-      const response = await fetch(`http://127.0.0.1:5000${url.pathname}${url.search}`, {
-        method: request.method,
-        headers: request.headers,
-        body: request.body
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Content-Type': 'text/html;charset=UTF-8'
+    };
+
+    // Handle OPTIONS requests
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        headers: corsHeaders
       });
-      
-      return response;
+    }
+
+    try {
+      // Use env.ASSETS to serve static files
+      return env.ASSETS.fetch(request);
     } catch (error) {
-      return new Response(`Server Error: ${error.message}`, { status: 500 });
+      return new Response(`Server Error: ${error.message}`, {
+        status: 500,
+        headers: corsHeaders
+      });
     }
   }
 };
+EOL
+
+# Create a basic _routes.json file for routing
+cat > functions/_routes.json << 'EOL'
+{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": []
+}
 EOL
