@@ -16,8 +16,6 @@ cp -r requirements.txt .env functions/
 
 # Create the worker script to handle Flask routes
 cat > functions/_worker.js << 'EOL'
-import { createExecutionContext } from "@cloudflare/workers-types";
-
 export default {
   async fetch(request, env) {
     try {
