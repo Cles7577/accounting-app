@@ -1366,11 +1366,11 @@ def forgot_password():
                     "redirect_to": RESET_URL
                 }
             )
-            print(f"Password reset response: {response}")  # Add debug logging
+            print(f"Password reset email response: {response}")
             flash('Password reset link has been sent to your email. Please check your inbox.', 'success')
             return redirect(url_for('login'))
         except Exception as e:
-            print(f"Password reset error: {str(e)}")  # Add debug logging
+            print(f"Password reset email error: {str(e)}")
             flash(f'Error sending reset link: {str(e)}', 'error')
             
     return render_template('forgot_password.html')
@@ -1385,11 +1385,15 @@ def reset_password():
     for key, value in request.args.items():
         print(f"{key}: {value}")
     
-    # Get the token from the URL
+    # Get the recovery parameters
     token = request.args.get('token')
-    print(f"Found token: {token}")
+    type = request.args.get('type')
     
-    if not token:
+    print(f"Found token: {token}")
+    print(f"Type: {type}")
+    
+    # Verify we have a recovery token
+    if not token or type != 'recovery':
         flash('Invalid or missing reset token. Please request a new password reset link.', 'error')
         return redirect(url_for('login'))
     
@@ -1402,11 +1406,12 @@ def reset_password():
             return render_template('reset_password.html')
         
         try:
-            # Update the user's password
-            response = supabase_auth.auth.verify_and_update_user(
-                token,
-                {"password": password}
-            )
+            # Call Supabase's recovery flow
+            response = supabase_auth.auth.verify_otp({
+                'token': token,
+                'type': 'recovery',
+                'new_password': password
+            })
             print(f"Password reset response: {response}")
             
             flash('Password has been reset successfully. Please log in with your new password.', 'success')
