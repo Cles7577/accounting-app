@@ -14,6 +14,7 @@ mkdir -p functions
 cp -r app.py templates static functions/
 cp -r requirements.txt functions/
 cp .env functions/
+cp index.html functions/
 
 # Create the worker script
 cat > functions/_worker.js << 'EOL'
@@ -34,7 +35,18 @@ export default {
     }
 
     try {
-      // Use env.ASSETS to serve static files
+      const url = new URL(request.url);
+      
+      // Serve index.html for the root path
+      if (url.pathname === '/') {
+        const response = await env.ASSETS.fetch(new Request(url.origin + '/index.html'));
+        return new Response(response.body, {
+          ...response,
+          headers: { ...response.headers, ...corsHeaders }
+        });
+      }
+      
+      // For all other paths, use env.ASSETS to serve files
       return env.ASSETS.fetch(request);
     } catch (error) {
       return new Response(`Server Error: ${error.message}`, {
